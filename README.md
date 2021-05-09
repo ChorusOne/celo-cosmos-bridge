@@ -1,4 +1,4 @@
-# A Cosmos-Celo bridge
+# An IBC Celo-Cosmos bridge
 
 ## Overview
 This is a bridge connecting a Celo blockchain to a Cosmos-SDK based blockchain. Specifically it connects
