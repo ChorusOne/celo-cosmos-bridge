@@ -10,7 +10,7 @@ The cosmos-celo bridge, comprises three major components, with two light clients
   - [Celo geth](https://github.com/celo-org/celo-blockchain), an Ethereum based blockchain with Istanbul BFT consensus
   - [Quantum-tunnel](https://github.com/ChorusOne/quantum-tunnel/tree/celo), a simple relayer, written in rust.
   - Tendermint light client (TBD), written in solidity and deployed on the Celo blockchain
-  - [Celo light client](https://github.com/ChorusOne/celo-light-client), written in rust as CosmWasm contract. Its wasm bytecode need to be uploaded to Gaia fork as part of bridge setup.
+  - [Celo light client](https://github.com/ChorusOne/celo-light-client), written in rust as CosmWasm contract. Its wasm bytecode need to be uploaded to cosmos node as part of bridge setup.
 
 ## Integration tests
 A single `Makefile` orchiestrates setup of all compontents. You should run the following commands in to execute selected integration test:
@@ -19,11 +19,11 @@ A single `Makefile` orchiestrates setup of all compontents. You should run the f
 $ make build-geth
 $ make start-geth
 
-# Setup gaia node with the ChorusOne fork of cosmos-sdk (adds wasm-manager functionality)
-$ make build-gaia
-$ make start-gaia
+# Setup cosmos node with the ChorusOne fork of cosmos-sdk (adds wasm-manager functionality)
+$ make build-simd
+$ make start-simd
 
-# Build and upload Celo Light Client to gaia node (via wasm-manager interface)
+# Build and upload Celo Light Client to cosmos node (via wasm-manager interface)
 $ make build-lc
 $ make start-lc
 
