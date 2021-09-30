@@ -42,7 +42,7 @@ clean-lc:
 
 build-lc: | clean-lc
 	git clone https://github.com/ChorusOne/celo-light-client.git
-	cd celo-light-client && git checkout main
+	cd celo-light-client && git checkout tags/v0.1.0
 	cd celo-light-client && make wasm-optimized
 
 start-lc:
