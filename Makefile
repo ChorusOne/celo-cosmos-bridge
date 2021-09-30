@@ -54,14 +54,30 @@ start-lc:
 clean-geth:
 	rm -rf celo-blockchain 2>/dev/null
 
+clean-config-geth:
+	cd celo-blockchain && rm -r ./dev-chain || true
+
+config-geth:
+	echo "e517af47112e4f501afb26e4f34eadc8b0ad8eadaf4962169fc04bc8ddbfe091" > /tmp/privkey
+	echo "password" > /tmp/geth.password
+
+	cd celo-blockchain && ./build/bin/geth --datadir ./dev-chain --dev --miner.validator "0" || true
+	cd celo-blockchain && ./build/bin/geth --datadir ./dev-chain --dev account import /tmp/privkey --password /tmp/geth.password
+
+	# top up account
+	cd celo-blockchain && echo 'eth.sendTransaction({from: "0x47e172f6cfb6c7d01c1574fa3e2be7cc73269d95", to: "0xa89f47c6b463f74d87572b058427da0a13ec5425", value: 50000000000000000000000}); exit' | ./build/bin/geth --datadir ./dev-chain --dev --miner.validator "0" console
+
 build-geth: | clean-geth
 	curl https://github.com/celo-org/celo-blockchain/archive/v1.3.2.tar.gz -L | tar xvz
 	mv celo-blockchain-1.3.2 celo-blockchain
 
 	cd celo-blockchain &&  go run build/ci.go install ./cmd/geth
 
-start-geth:
-	cd celo-blockchain && go run build/ci.go install ./cmd/geth && ./build/bin/geth  --maxpeers 50 --light.maxpeers 20 --syncmode lightest --rpc  --ws --wsport 3334 --wsapi eth,net,web3,istanbul --rpcapi eth,net,web3,istanbul console 
+start-geth: | clean-config-geth config-geth
+	cd celo-blockchain && ./build/bin/geth --datadir ./dev-chain --allow-insecure-unlock --dev --rpc  --ws --wsport 3334 --wsapi eth,net,web3,istanbul,txpool,db,personal,debug --rpcapi eth,net,web3,istanbul,txpool,db,personal,debug --vmdebug --rpccorsdomain https://remix.ethereum.org --miner.validator "0" --minerthreads 2  --nodiscover --nousb --syncmode full --gcmode=archive console
+
+start-geth-live: | clean-config-geth
+	cd celo-blockchain && go run build/ci.go install ./cmd/geth && ./build/bin/geth --datadir ./dev-chain --maxpeers 50 --light.maxpeers 20 --syncmode lightest --rpc  --ws --wsport 3334 --wsapi eth,net,web3,istanbul --rpcapi eth,net,web3,istanbul console
 
 clean-qt:
 	rm -rf quantum-tunnel 2>/dev/null
@@ -80,5 +96,21 @@ start-qt:
 	gaia/build/gaiad --home "data/.gaiad" query ibc wasm-manager wasm_code_entry wormhole | grep -oP "code_id: \K.*" | head -n1 | xargs -I{} sed -i 's/"wasm_id": ".*"/"wasm_id": "{}"/g' quantum-tunnel/test_data/$(TEST_MODE).json
 
 	cd quantum-tunnel && COSMOS_SIGNER_SEED=$$(cat ../data/.gaiad/relayer_mnemonic) CELO_SIGNER_SEED="flat reflect table identify forward west boat furnace similar million list wood" RUST_LOG=info RUSTFLAGS=-Awarnings cargo run --features celo -- -c test_data/$(TEST_MODE).json start
+
+clean-tlc:
+	rm -rf yui-ibc-solidity 2>/dev/null
+
+build-tlc: | clean-tlc
+	git clone https://github.com/mkaczanowski/yui-ibc-solidity
+	cd yui-ibc-solidity && git checkout tendermint
+	cd yui-ibc-solidity && npm i @truffle/hdwallet-provider
+	cd yui-ibc-solidity && npx truffle compile
+
+start-tlc:
+	cd yui-ibc-solidity && npx truffle migrate --reset --network=celo
+	cd yui-ibc-solidity && NETWORK=celo make config
+
+	# test program
+	# cd yui-ibc-solidity && cargo run -- 3 false false
 
 clean: | clean-geth clean-qt clean-lc clean-gaia clean-config-gaia
