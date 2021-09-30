@@ -15,7 +15,7 @@ build-gaia: | clean-gaia
 	cd gaia && echo "replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk" >> go.mod
 	cd gaia && sed -i "s/-mod=readonly//g" Makefile
 	
-	cd gaia && make build
+	cd gaia && go mod tidy && make build
 
 start-gaia: | clean-config-gaia config-gaia
 	cd gaia && make build
