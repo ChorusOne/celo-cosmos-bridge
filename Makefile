@@ -55,8 +55,8 @@ clean-geth:
 	rm -rf celo-blockchain 2>/dev/null
 
 build-geth: | clean-geth
-	curl https://github.com/celo-org/celo-blockchain/archive/v1.2.4.tar.gz -L | tar xvz
-	mv celo-blockchain-1.2.4 celo-blockchain
+	curl https://github.com/celo-org/celo-blockchain/archive/v1.3.2.tar.gz -L | tar xvz
+	mv celo-blockchain-1.3.2 celo-blockchain
 
 	cd celo-blockchain &&  go run build/ci.go install ./cmd/geth
 
