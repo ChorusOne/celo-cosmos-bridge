@@ -68,7 +68,7 @@ clean-qt:
 
 build-qt: | clean-qt
 	git clone https://github.com/ChorusOne/quantum-tunnel
-	cd quantum-tunnel && git checkout celo
+	cd quantum-tunnel && git checkout tags/v0.1.0-celo
 
 	# point quantum tunnel to local celo-light-client crate
 	cd quantum-tunnel && sed -i "/celo-light-client.git/c\celo_light_client = { path = \"../celo-light-client\", features = [\"wasm-contract\"], optional = true , default-features = false}" Cargo.toml
