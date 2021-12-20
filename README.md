@@ -9,7 +9,7 @@ The cosmos-celo bridge, comprises three major components, with two light clients
   - [A fork of cosmos-sdk](https://github.com/ChorusOne/cosmos-sdk/tree/add-wasm-management), with an additional module to allow execution of wasm-based light clients.
   - [Celo geth](https://github.com/celo-org/celo-blockchain), an Ethereum based blockchain with Istanbul BFT consensus
   - [Quantum-tunnel](https://github.com/ChorusOne/quantum-tunnel/tree/celo), a simple relayer, written in rust.
-  - Tendermint light client (TBD), written in solidity and deployed on the Celo blockchain
+  - [Tendermint light client](https://github.com/ChorusOne/tendermint-sol), written in solidity and deployed on the Celo blockchain
   - [Celo light client](https://github.com/ChorusOne/celo-light-client), written in rust as CosmWasm contract. Its wasm bytecode need to be uploaded to cosmos node as part of bridge setup.
 
 ## Integration tests
@@ -24,8 +24,12 @@ $ make build-simd
 $ make start-simd
 
 # Build and upload Celo Light Client to cosmos node (via wasm-manager interface)
-$ make build-lc
-$ make start-lc
+$ make build-clc
+$ make start-clc
+
+# Build and upload Tendermint Light Client to celo node (via truffle)
+$ make build-tlc
+$ make start-tlc
 
 # Setup Quantum Tunnel relayer (pick your integration test at this step)
 $ make build-qt
